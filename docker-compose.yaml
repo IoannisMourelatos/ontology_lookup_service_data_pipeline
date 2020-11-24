@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "${APP_IMAGE}:${APP_TAG}"
+    volumes:
+      - ./:/app/
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:8000"
+    command: "uvicorn api.server:app --reload --host 0.0.0.0 --port 8000 --workers 1"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12.1-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    volumes:
+    - pgadmin_data:/var/lib/pgadmin/data/
+    env_file:
+      - .env
+    ports:
+      - 5050:80
+    depends_on:
+      - db
+
+volumes:
+    postgres_data:
+    pgadmin_data:
