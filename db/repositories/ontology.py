@@ -48,7 +48,7 @@ class OntologyRepository(BaseRepository):
         ols_api_data_provider = OlsApiDataProvider()
         ols_futures = list()
         batch_info = OlsApiResourceResponse.from_api_response(ols_api_data_provider.get_list_of_ontology_terms(0))
-        pages = [*range(batch_info.current_page + 1, batch_info.current_page + 1, 1)]
+        pages = [*range(batch_info.current_page + 1, batch_info.total_pages + 1, 1)]
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             for page in pages:
                 ols_futures.append(executor.submit(ols_api_data_provider.get_list_of_ontology_terms, page))
